@@ -5,5 +5,7 @@
         <file>image/record.png</file>
         <file>image/voice_off.png</file>
         <file>image/voice_on.png</file>
+        <file>image/fullScreen.png</file>
+        <file>image/return.png</file>
     </qresource>
 </RCC>

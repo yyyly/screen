@@ -8,7 +8,8 @@ ScreenToolBar::ScreenToolBar(QWidget *parent) :
     title(new QLabel),
     soundButton(new SoundPushButton),
     capPicButton(new QPushButton),
-    closeButton(new QPushButton)
+    closeButton(new QPushButton),
+    toMaxButton(new QPushButton)
 {
     setFixedHeight(22);
     //设置背景
@@ -19,11 +20,14 @@ ScreenToolBar::ScreenToolBar(QWidget *parent) :
     soundButton->setFixedSize(20,20);
     capPicButton->setFixedSize(20,20);
     closeButton->setFixedSize(20,20);
+    toMaxButton->setFixedSize(20,20);
     setButtonStyles(closeButton,":/image/close.png",4);
     setButtonStyles(capPicButton,":/image/capture.png",4);
+    setButtonStyles(toMaxButton,":/image/fullScreen.png",4);
     title->setStyleSheet(QString("QLabel{color: white;}"));
     QHBoxLayout *hLayout = new QHBoxLayout;
     hLayout->setMargin(0);
+    hLayout->addWidget(toMaxButton);
     hLayout->addStretch();
     hLayout->addWidget(title);
     hLayout->addStretch();

@@ -15,12 +15,13 @@ public:
     explicit ScreenToolBar(QWidget *parent = 0);
     ~ScreenToolBar();
     QLabel* getTitleLable();
-    void setButtonStyles(QPushButton *button, QString imgsrc, int CutSec);
+    static void setButtonStyles(QPushButton *button, QString imgsrc, int CutSec);
 public:
     QLabel *title;
     SoundPushButton *soundButton;
     QPushButton *capPicButton;
     QPushButton *closeButton;
+    QPushButton *toMaxButton;
 protected:
     void paintEvent(QPaintEvent *event);
 };

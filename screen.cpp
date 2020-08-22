@@ -7,6 +7,8 @@
 #include<QGraphicsView>
 Screen::Screen(int n,QWidget *parent) :
     QFrame(parent),
+    isMax(false),
+    isClicked(false),
     toolBar(new ScreenToolBar(this)),
     playWidget(new QWidget()),
     num(n),
@@ -31,6 +33,7 @@ Screen::Screen(int n,QWidget *parent) :
             this,SLOT(soundButtonClicked(SoundCommond)));
     connect(toolBar->capPicButton,SIGNAL(clicked()),this,SLOT(capPicButtonClicked()));
     connect(toolBar->closeButton,SIGNAL(clicked()),this,SLOT(closeButtonClicked()));
+    connect(toolBar->toMaxButton,SIGNAL(clicked()),this,SLOT(toMaxButtonClicked()));
     connect(timer,&QTimer::timeout,this,&Screen::onTimeOut);
     connect(timer1,&QTimer::timeout,this,&Screen::onTimeOut);
 }
@@ -98,22 +101,48 @@ Screen::SelectState Screen::setSelectState(SelectState state)
     return isSelect;
 }
 
+void Screen::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(isSelect == SelectState::UNSELECTED)
+    {
+        isSelect = SelectState::SELECTED;
+        emit(selectedStateIsChange(num));
+    }
+}
+
+void Screen::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    toMaxButtonClicked();
+}
+
 bool Screen::event(QEvent *e)
 {
-    if(e->type() == QEvent::MouseButtonPress||e->type() == QEvent::MouseMove)
-    {
-        return true;
-    }
-    else if (e->type() == QEvent::MouseButtonRelease)
+   /*if (e->type() == QEvent::MouseButtonRelease)
     {
         if(isSelect == SelectState::UNSELECTED)
         {
             isSelect = SelectState::SELECTED;
             emit(selectedStateIsChange(num));
         }
+        if(!isClicked)//第一次点击
+        {
+            isClicked = true;
+            timerN = startTimer(2000);
+        }
+        else
+        {
+            isClicked = false;
+            killTimer(timerN);
+            toMaxButtonClicked();
+        }
         return true;
     }
-    else
+    else if(e->type() == QEvent::Timer)
+    {
+        isClicked = false;
+        killTimer(timerN);
+    }
+    else*/
         return QFrame::event(e);
 }
 
@@ -173,6 +202,51 @@ void Screen::capPicButtonClicked()
     emit capPicture(imf);
 }
 
+void Screen::toMaxButtonClicked()
+{
+    QWidget *w = nullptr;
+    if(flag == 0)
+    {
+      w  = this->parentWidget();
+    }
+    else
+    {
+        w = this->parentWidget()->parentWidget();
+    }
+    if(!isMax)
+    {
+        if(w)
+        {
+            int height = w->height() - 20;
+            int width = w->width() - 20;
+            normalRect = this->geometry();
+            this->setGeometry(0,0,width,height);
+        }
+        ScreenToolBar::setButtonStyles(toolBar->toMaxButton,":/image/return.png",4);
+        isMax = true;
+        emit toMax(num);
+    }
+    else
+    {
+        this->setGeometry(normalRect);
+        ScreenToolBar::setButtonStyles(toolBar->toMaxButton,":/image/fullScreen.png",4);
+        isMax = false;
+        emit toNormal();
+    }
+
+
+}
+
+void Screen::setScreenNormal()
+{
+    if(isMax)
+    {
+        this->setGeometry(normalRect);
+        ScreenToolBar::setButtonStyles(toolBar->toMaxButton,":/image/fullScreen.png",4);
+        isMax = false;
+    }
+}
+
 void Screen::closeButtonClicked()
 {
     if(flag == 0)
@@ -224,4 +298,10 @@ void Screen::bindDevice(CameraDeviceImf *c, int channel)
     imf = *c;
     pImf = c;
     this->channel = channel;
+}
+
+void Screen::setPlayState(const PlayState state)
+{
+    playState = state;
+    return;
 }

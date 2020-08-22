@@ -34,11 +34,14 @@ public:
     int getChannel(){return channel;}
     int flag;//根据flag的值不同，按关闭键时动作不同，默认为0，仅发射信号。为1时关闭
     PlayState getPlayState(){return playState;}
-    void setPlayState(const PlayState state){playState = state;}
+    void setPlayState(const PlayState state);
     void startCountDown(int ms);
     QObject *returnPanent(){return  parent;}
+    void setScreenNormal();
 private:
-
+    bool isMax;
+    bool isClicked;
+    //int timerN;
     ScreenToolBar *toolBar;
     int num;//第几号
     SelectState isSelect;
@@ -54,6 +57,7 @@ private:
     QObject *parent;
     bool mouseIsPress;
     QPoint mousePos;
+    QRect normalRect;
 signals:
     void selectedStateIsChange(int n);
     void cameraClose(CameraDeviceImf& c,Screen *screen);
@@ -61,10 +65,13 @@ signals:
     void capPicture(CameraDeviceImf& c);
     void soundCommond(CameraDeviceImf& c,SoundCommond commond);
     void stopPlay();
+    void toMax(int n);
+    void toNormal();
 public slots:
     void soundButtonClicked(SoundCommond c);
     void capPicButtonClicked();
     void closeButtonClicked();
+    void toMaxButtonClicked();
     void onTimeOut();
 protected:
    bool event(QEvent *e);
@@ -72,6 +79,9 @@ protected:
    void paintEvent(QPaintEvent *event);
    void hideEvent(QHideEvent *event);
    void showEvent(QShowEvent *event);
+   void mouseDoubleClickEvent(QMouseEvent *event);
+   void mouseReleaseEvent(QMouseEvent *event);
+
 };
 
 #endif // SCREEN_H
